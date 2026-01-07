@@ -24,6 +24,7 @@ WITH
     FROM `tech-analytics-data`.`improvado`.`freshdesk_tickets`
     WHERE
       resolved_at IS NOT NULL AND resolved_at != ''  -- Exclude empty strings
+      AND status = '4' -- Resolved status
     GROUP BY 1, 2
   ),
 
