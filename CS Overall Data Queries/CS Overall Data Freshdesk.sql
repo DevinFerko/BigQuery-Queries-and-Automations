@@ -18,13 +18,20 @@ WITH
   tickets_resolved AS (
     SELECT
       responder_id AS agent_id,
-      -- Safely convert STRING to DATE, handling potential empty strings
-      CAST(PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', resolved_at) AS DATE) AS date,
-      COUNT(*) AS tickets_resolved
+      -- Use resolved_at if available, otherwise closed_at
+      CAST(
+        PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ',
+          COALESCE(NULLIF(resolved_at, ''), NULLIF(closed_at, ''))
+      ) AS DATE
+    ) AS date,
+    COUNT(*) AS tickets_resolved
     FROM `tech-analytics-data`.`improvado`.`freshdesk_tickets`
     WHERE
-      resolved_at IS NOT NULL AND resolved_at != ''  -- Exclude empty strings
-      AND status = '4' -- Resolved status
+      (
+      (resolved_at IS NOT NULL AND resolved_at != '')
+      OR (closed_at IS NOT NULL AND closed_at != '')
+      )
+    AND status IN ('4', '5')   -- Resolved (4) or Closed (5)
     GROUP BY 1, 2
   ),
 
