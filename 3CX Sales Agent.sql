@@ -1,11 +1,9 @@
 WITH QueueSegments AS (
   /* Identify all calls that entered a queue */
-  SELECT DISTINCT
-    cdr_id,
+  SELECT 
+    *,
     CAST(destination_dn_number AS STRING) AS q_num,
     destination_dn_name AS q_name,
-    cdr_started_at,
-    cdr_answered_at
   FROM
     `pbx-21700315.3cx_call_data.public_cdroutput`
   WHERE
@@ -34,7 +32,7 @@ AgentSegments AS (
 ),
 QueueAgg AS (
   /* Aggregate stats for the Queue Summary rows */
-  SELECT DISTINCT
+  SELECT 
     CONCAT(q_num, ' ', IFNULL(q_name, '')) AS Queue,
     CAST(NULL AS STRING) AS Extension,
     COUNT(cdr_id) AS Queue_Received_Calls,
@@ -52,21 +50,21 @@ QueueAgg AS (
 ),
 AgentAgg AS (
   /* Aggregate stats for the Agent Detail rows */
-  SELECT DISTINCT
-    CONCAT(q_num, ' ', IFNULL(q_name, '')) AS Queue,
-    CONCAT(ext_num, ' ', IFNULL(ext_name, '')) AS Extension,
-    0 AS Queue_Received_Calls,
-    0 AS Queue_Serviced_Calls,
-    0 AS Queue_Unanswered_Calls,
-    COUNT(cdr_answered_at) AS Extension_Serviced_Calls,
-    COUNTIF(cdr_answered_at IS NULL) AS Extension_Polls,
-    SUM(IFNULL(talk_sec, 0)) AS total_talk_sec,
-    ext_name AS AGENT,
+  SELECT 
+        CONCAT(q_num, ' ', IFNULL(q_name, '')) AS Queue,
+    CAST(NULL AS STRING) AS Extension,
+    COUNT(cdr_id) AS Queue_Received_Calls,
+    COUNT(cdr_answered_at) AS Queue_Serviced_Calls,
+    COUNTIF(cdr_answered_at IS NULL OR CAST(cdr_answered_at AS STRING) = 'null') AS Queue_Unanswered_Calls,
+    0 AS Extension_Serviced_Calls,
+    0 AS Extension_Polls,
+    0 AS total_talk_sec,
+    CAST(NULL AS STRING) AS AGENT,
     DATE(cdr_started_at) AS call_date
   FROM
-    AgentSegments
+    QueueSegments
   GROUP BY
-    Queue, Extension, AGENT, call_date
+    cdr_id, Queue, Extension, AGENT, call_date
 ),
 Combined AS (
   /* Combine summary and detail rows */
