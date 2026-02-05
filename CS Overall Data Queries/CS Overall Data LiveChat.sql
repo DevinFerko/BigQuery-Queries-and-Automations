@@ -8,7 +8,7 @@ SELECT
     ,logged_in_time AS `Logged in time`
     ,chatting_time AS `Chatting time seconds`
 
-FROM `tech-analytics-data.improvado.livechat_agents` 
+FROM `project_id.dataset.table` 
 WHERE date = "2026-01-19" 
 AND agent_id = '6ed2b4eb7c06fc5a432c90ad42b342cb'
 ORDER BY agent_id

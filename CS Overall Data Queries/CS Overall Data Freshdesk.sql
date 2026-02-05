@@ -6,7 +6,7 @@ WITH
       -- Safely convert STRING to DATE, handling potential empty strings
       CAST(PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', created_at) AS DATE) AS date,
       COUNT(*) AS tickets_assigned
-    FROM `tech-analytics-data`.`improvado`.`freshdesk_tickets`
+    FROM `project_id.dataset.table`
     WHERE
       responder_id IS NOT NULL
       AND created_at IS NOT NULL
@@ -25,7 +25,7 @@ WITH
       ) AS DATE
     ) AS date,
     COUNT(*) AS tickets_resolved
-    FROM `tech-analytics-data`.`improvado`.`freshdesk_tickets`
+    FROM `project_id.dataset.table`
     WHERE
       (
       (resolved_at IS NOT NULL AND resolved_at != '')
@@ -42,8 +42,8 @@ WITH
       -- Safely convert STRING to DATE, handling potential empty strings
       CAST(PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', c.created_at) AS DATE) AS date,
       COUNT(*) AS responses
-    FROM `tech-analytics-data`.`improvado`.`freshdesk_conversations` AS c
-    INNER JOIN `tech-analytics-data`.`improvado`.`freshdesk_agents` AS a
+    FROM `project_id.dataset.table` AS c
+    INNER JOIN `project_id.dataset.table` AS a
       ON c.user_id = a.agent_id
     WHERE
       c.created_at IS NOT NULL AND c.created_at != ''  -- Exclude empty strings
@@ -69,7 +69,7 @@ FROM
         SELECT date FROM `agent_responses`
       )
   ) AS d
-CROSS JOIN `tech-analytics-data`.`improvado`.`freshdesk_agents` AS a
+CROSS JOIN `project_id.dataset.table` AS a
 LEFT JOIN `tickets_assigned` AS ta
   ON a.agent_id = ta.agent_id AND d.date = ta.date
 LEFT JOIN `tickets_resolved` AS tr

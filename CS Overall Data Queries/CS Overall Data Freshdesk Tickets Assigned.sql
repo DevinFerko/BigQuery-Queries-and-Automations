@@ -3,7 +3,7 @@ SELECT
     -- Safely convert STRING to DATE, handling potential empty strings
     CAST(PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', created_at) AS DATE) AS date,
     COUNT(*) AS tickets_assigned
-    FROM `tech-analytics-data`.`improvado`.`freshdesk_tickets`
+    FROM `project_id.dataset.table`
     WHERE
     responder_id IS NOT NULL
     AND created_at IS NOT NULL

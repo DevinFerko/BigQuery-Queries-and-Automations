@@ -5,7 +5,7 @@ WITH QueueSegments AS (
     CAST(destination_dn_number AS STRING) AS q_num,
     destination_dn_name AS q_name,
   FROM
-    `pbx-21700315.3cx_call_data.public_cdroutput`
+    `project_id.dataset.table`
   WHERE
     destination_entity_type = 'queue'
 ),
@@ -23,7 +23,7 @@ AgentSegments AS (
     p.cdr_ended_at,
     TIMESTAMP_DIFF(p.cdr_ended_at, p.cdr_answered_at, SECOND) AS talk_sec
   FROM
-    `pbx-21700315.3cx_call_data.public_cdroutput` p
+    `project_id.dataset.table` p
   INNER JOIN
     QueueSegments q ON p.originating_cdr_id = q.cdr_id
   WHERE

@@ -8,7 +8,7 @@ SELECT
     ) AS DATE
     ) AS resolved_date,
     COUNT(*) AS tickets_resolved
-FROM `tech-analytics-data`.`improvado`.`freshdesk_tickets`
+FROM `project_id.dataset.table`
 WHERE
     (
         (resolved_at IS NOT NULL AND resolved_at != '')
